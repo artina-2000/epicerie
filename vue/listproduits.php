@@ -14,7 +14,7 @@
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<a class="navbar-brand" href="#">Epicerie</a>
 		</nav>
-
+		<br>
 		<div class="row">
 			<div class="col-md-8">
 				<table class="table">
@@ -22,13 +22,15 @@
 						<th>Désignation</th>
 						<th>Prix</th>
 						<th>Unité</th>
+						<th>Action</th>
 					</thead>
-					<tbody id="produit">
+					<tbody id="tbodyproduit">
 						<?php foreach ($lists as $key => $list) { ?>
-							<tr>
+							<tr id="produit_<?= $list['id'] ?>">
 								<td><?= $list['designation'] ?></td>
 								<td><?= $list['prix'] ?>Ar</td>
 								<td><?= $list['nom'] ?></td>
+								<td><button class="btn btn-danger" onclick="supprimerProduit(<?= $list['id'] ?>)">Supprimer</button></td>
 							</tr>
 						<?php	} ?>
 					</tbody>
@@ -43,7 +45,11 @@
 				</div>
 				<p>
 					<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-						Insérer
+						Inserer Produit
+					</button>
+
+					<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseEx" aria-expanded="false" aria-controls="collapseExample">
+						Inserer Unité
 					</button>
 				</p>
 				<div class="collapse" id="collapseExample">
@@ -69,28 +75,134 @@
 						</form>
 					</div>
 				</div>
+				<div class="collapse" id="collapseEx">
+					<div class="card card-body">
+						<form>
+							<div class="form-group">
+								<label for="nom">nom unité</label>
+								<input type="text" class="form-control" id="nom" placeholder="unité">
+							</div>
+							<button class="btn btn-dark" type="button" id="valider" onclick="enregistrerUnite()">Valider</button>
+						</form>
+					</div>
+				</div>
+				<table class="table">
+					<thead>
+						<th>Les unités</th>
+					</thead>
+					<tbody id="tbodyunite">
+						<?php foreach ($unites as $key => $unite) { ?>
+							<tr id="unite_<?= $unite['id'] ?>">
+								<td><?= $unite['nom'] ?></td>
+								<td><button class="btn btn-danger" onclick="supprimerUnite(<?= $unite['id'] ?>)">Supprimer</button></td>
+							</tr>
+						<?php } ?>
+					</tbody>
+				</table>
 			</div>
 		</div>
+	</div>
 	</div>
 	<script src="http://localhost/epicerie/assets/js/jquery-3.3.1.min.js"></script>
 	<script src="http://localhost/epicerie/assets/js/popper.min.js"></script>
 	<script src="http://localhost/epicerie/assets/js/bootstrap.min.js"></script>
 	<script>
+		function enregistrerUnite() {
+			var nom = $('#nom').val();
+			//console.log(nom);
+			var data = {
+				nom: nom,
+			};
+			if (nom == "") {
+				alert('veuillez remplir le champ!')
+			} else {
+				$.ajax({
+					type: "POST",
+					url: "http://localhost/epicerie/controler/insererUnite.php",
+					data: data,
+					success: function(response) {
+						var data = JSON.parse(response);
+						console.log(data);
+						var data = JSON.parse(response);
+						//console.log(data);
+						var id = data.id;
+						var html = `<tr id="unite_${id}">
+								<td>${nom}</td>
+								<td><button class="btn btn-danger" onclick="supprimerUnite(${id})">Supprimer</button></td>
+							</tr>`;
+						$('#tbodyunite').append(html);
+
+						var option = `<option value="${id}" selected>${nom}</option>`
+						$('#unite').append(option);
+					}
+				});
+			}
+		}
+
 		function enregistrerProduit() {
 			var designation = $('#designation').val();
 			var prix = $('#prix').val();
 			var unite = $('#unite').val();
 			var nom = $('#unite').find('[value="' + unite + '"]').text();
+			var data = {
+				designation: designation,
+				prix: prix,
+				nom: nom,
+				unite: unite
+			};
 			if (designation == "" || prix == "") {
 				alert('Veuillez remplir tous les champs!')
 			} else {
-				var html = `<tr>
-										<td>${designation}</td>
-										<td>${prix}</td>
-										<td>${nom}</td>
-									</tr>`;
-				$('#produit').append(html);
+				$.ajax({
+					type: "POST",
+					url: "http://localhost/epicerie/controler/insererProduit.php",
+					data: data,
+					success: function(response) {
+						var data = JSON.parse(response);
+						//console.log(data);
+						var id = data.id;
+						var html = `<tr id="produit_${id}">
+								<td>${designation}</td>
+								<td>${prix}</td>
+								<td>${nom}</td>
+								<td><button class="btn btn-danger" onclick="supprimerProduit(${id})">Supprimer</button></td>
+							</tr>`;
+						$('#tbodyproduit').append(html);
+					}
+				});
 			}
+		}
+
+		function supprimerProduit(id) {
+			var data = {
+				id: id
+			}
+			var id = `produit_${id}`;
+			//console.log(id);
+			$.ajax({
+				type: "POST",
+				url: "http://localhost/epicerie/controler/supProduitCont.php",
+				data: data,
+				success: function(response) {
+					$(`#${id}`).remove();
+				}
+			});
+		}
+
+		function supprimerUnite(id) {
+			var data = {
+				id: id
+			}
+			var id = `unite_${id}`;
+			console.log(id);
+			$.ajax({
+				type: "POST",
+				url: "http://localhost/epicerie/controler/supUniteCont.php",
+				data: data,
+				success: function(response) {
+					$(`#${id}`).remove();
+				}
+			});
 		}
 	</script>
 </body>
