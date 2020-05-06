@@ -49,6 +49,31 @@ class ListModel
             'id' => $id
         ]);
     }
+    public function selectUnite($id){
+        $reponse = $this->bdd->prepare('SELECT * FROM produits WHERE id_unite= :id');
+        $reponse->execute([
+            'id' => $id
+        ]);
+        $unitexiste = $reponse->fetchAll();
+        return $unitexiste;
+    }
+    public function validerModif($id,$nom){
+        $req = $this->bdd->prepare('UPDATE unite SET nom= :nom WHERE id= :id');
+            $req->execute(array(
+                'id' => $id,
+                'nom' => $nom
+            ));
+    }
+    public function modifierProduit($id,$designation,$prix){
+        $reponse = $this->bdd->prepare('SELECT * FROM produits WHERE id_unite= :id');
+        $reponse->execute([
+            'id' => $id,
+            'designation' => $designation,
+            'prix' => $prix
+        ]);
+        $produit = $reponse->fetchAll();
+        return $produit;
+    }
 
 }
 ?>
