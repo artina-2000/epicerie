@@ -20,7 +20,8 @@ function enregistrerUnite() {
                 var html = `<tr id="unite_${id}">
                         <td>${nom}</td>
                         <td><button class="btn btn-danger" onclick="supprimerUnite(${id})">Supprimer</button></td>
-                    </tr>`;
+                        <td><button class="btn btn-success" onclick="modifierUnite(${id},'${nom}')">Modifier</button></td>
+                        </tr>`;
                 $('#tbodyunite').append(html);
 
                 var option = `<option id="option_unite_${id}" value="${id}" selected>${nom}</option>`;
@@ -58,7 +59,8 @@ function enregistrerProduit() {
                         <td>${prix}</td>
                         <td>${nom}</td>
                         <td><button class="btn btn-danger" onclick="supprimerProduit(${id})">Supprimer</button></td>
-                    </tr>`;
+                        <td><button class="btn btn-success" onclick="modifierProduit(${id},'${designation}',${prix})">Modifier</button></td>
+                        </tr>`;
                 $('#tbodyproduit').append(html);
                 $('#designation').val("");
                 $('#prix').val("");
@@ -140,35 +142,63 @@ function validerModif(id) {
     });
 }
 function modifierProduit(id, designation, prix) {
-    var select= recupererUnites();
+    var select = recupererUnites();
     var html = `<tr id="produit_${id}">
-    <td><input class="form-control" type="text" id="produit_modif_${designation}" value="${designation}"></td>
-    <td><input class="form-control" type="number" id="produit_modif_${prix}" value="${prix}"></td>
+    <td><input class="form-control" type="text" id="designation_modif_${id}" value="${designation}"></td>
+    <td><input class="form-control" type="number" id="prix_modif_${id}" value="${prix}"></td>
     <td>${select}</td>
-	<td><button class="btn btn-danger" onclick="supprimerProduit(${id})">Supprimer</button></td>
-	<td><button class="btn btn-success" onclick="modifierProduit(${id},'${designation}',${prix})">Modifier</button></td>
+	<td><button class="btn btn-success" onclick="validerModifprod(${id})">Valider</button></td>
     </tr>`;
-  //  console.log(html);
+    //  console.log(html);
     $(`#produit_${id}`).replaceWith(html);
 }
-
-function recupererUnites(){
+function validerModifprod(id){
+    var designation = $(`#designation_modif_${id}`).val();
+    var prix = $(`#prix_modif_${id}`).val();
+    var unite = $(`#unite_modif`).val();
+    // console.log(unite);
+    var data = {
+        designation: designation,
+        prix: prix,
+        unite: unite,
+        id: id
+    }
+    //console.log(data);
+    $.ajax({
+        type: "POST",
+        url: "http://localhost/epicerie/controler/validerModifprod.php",
+        data: data,
+        success: function (response) {
+            var data = JSON.parse(response);
+            //console.log(data);
+            var html = `<tr id="produit_${id}">
+            <td>${designation}</td>
+            <td>${prix}</td>
+            <td>${data.nom}</td>
+            <td><button class="btn btn-danger" onclick="supprimerProduit(${id})">Supprimer</button></td>
+            <td><button class="btn btn-success" onclick="modifierProduit(${id},'${designation}',${prix},${unite})">Modifier</button></td>
+        </tr>`;
+        $(`#produit_${id}`).replaceWith(html);
+        }
+    });
+}
+function recupererUnites() {
     //ajax recupere ts les unites
     var unites;
     $.ajax({
         type: "POST",
         url: "http://localhost/epicerie/controler/recupererUnites.php",
-        async:false,
+        async: false,
         success: function (response) {
             var data = JSON.parse(response);
             unites = data.unites;
             //console.log(unites);
         }
     });
-    var option= "";
-    console.log(unites);
-    unites.forEach((unite,key) => {
-        console.log(unite);
+    var option = "";
+   // console.log(unites);
+    unites.forEach((unite, key) => {
+        //console.log(unite);
         option = `${option}
         <option id="modif_unite_${unite.id}" value="${unite.id}" selected>${unite.nom}</option>`
     });

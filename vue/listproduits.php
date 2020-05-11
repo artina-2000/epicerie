@@ -12,7 +12,7 @@
 <body>
 	<div class="container">
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-			<a class="navbar-brand" href="#">Epicerie</a>
+			<a class="navbar-brand" href="#">E picérie</a>
 		</nav>
 		<br>
 		<div class="row">
@@ -46,11 +46,11 @@
 				</div>
 				<p>
 					<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-						Inserer Produit
+						Insérer Produit
 					</button>
 
 					<button class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseEx" aria-expanded="false" aria-controls="collapseExample">
-						Inserer Unité
+						Insérer Unité
 					</button>
 				</p>
 				<div class="collapse" id="collapseExample">

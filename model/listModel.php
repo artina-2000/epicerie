@@ -74,6 +74,22 @@ class ListModel
         $produit = $reponse->fetchAll();
         return $produit;
     }
-
+    public function validerModifprod($id,$designation,$prix,$unite){
+        $req = $this->bdd->prepare('UPDATE produits SET designation= :designation, prix= :prix, id_unite= :unite WHERE id= :id');
+        $req->execute(array(
+            'id' => $id,
+            'designation' => $designation,
+            'prix' => $prix,
+            'unite' => $unite
+        ));
+    }
+    public function selectUniteById($id_unite){
+            $reponse = $this->bdd->prepare('SELECT * FROM unite WHERE id= :id');
+            $reponse->execute(array(
+                'id' => $id_unite
+            ));
+            $unites = $reponse->fetchAll();
+            return $unites;    
+    }
 }
 ?>
